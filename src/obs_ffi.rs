@@ -1,10 +1,16 @@
 use anyhow::{bail, Context, Result};
-use obs_sys::{
-    bfree, blog, obs_frontend_add_event_callback, obs_frontend_get_current_record_output_path,
-    obs_frontend_get_last_replay, obs_frontend_get_last_screenshot,
-    obs_frontend_replay_buffer_save, obs_frontend_take_screenshot, LOG_DEBUG, LOG_ERROR, LOG_INFO,
-    LOG_WARNING,
-};
+use obs_sys::bfree;
+use obs_sys::blog;
+use obs_sys::obs_frontend_add_event_callback;
+use obs_sys::obs_frontend_get_current_record_output_path;
+use obs_sys::obs_frontend_get_last_replay;
+use obs_sys::obs_frontend_get_last_screenshot;
+use obs_sys::obs_frontend_replay_buffer_active;
+use obs_sys::obs_frontend_replay_buffer_save;
+use obs_sys::obs_frontend_replay_buffer_start;
+use obs_sys::obs_frontend_replay_buffer_stop;
+use obs_sys::obs_frontend_take_screenshot;
+use obs_sys::{LOG_DEBUG, LOG_ERROR, LOG_INFO, LOG_WARNING};
 use std::ffi::{c_char, c_void, CStr};
 use std::panic;
 use std::path::PathBuf;
@@ -89,4 +95,16 @@ pub fn take_screnshot() {
 
 pub fn save_replay() {
     unsafe { obs_frontend_replay_buffer_save() };
+}
+
+pub fn start_replay_buffer() {
+    unsafe { obs_frontend_replay_buffer_start() }
+}
+
+pub fn stop_replay_buffer() {
+    unsafe { obs_frontend_replay_buffer_stop() }
+}
+
+pub fn replay_buffer_active() -> bool {
+    unsafe { obs_frontend_replay_buffer_active() }
 }

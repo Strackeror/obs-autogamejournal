@@ -15,6 +15,8 @@ use obs_ffi::{
     LogLevel,
 };
 
+mod sleep_lock;
+
 mod window {
     use anyhow::{Context, Result};
     use std::path::Path;
@@ -177,12 +179,13 @@ fn event_callback(event_type: i32) {
 
 #[no_mangle]
 pub extern "C" fn obs_module_load() -> bool {
-    log(LogLevel::Info, "Toast");
     MODULE.lock().unwrap().config = Some(Config {
         target_path: get_current_record_output_path().unwrap()
     });
     add_event_callback(&event_callback);
+    sleep_lock::disable_inhibit_sleep().unwrap();
     std::thread::spawn(check_thread);
+    std::thread::spawn(sleep_lock::replay_buffer_restart_thread);
     true
 }
 
