@@ -7,6 +7,9 @@ edition = "2021"
 members = ["obs-sys", "."]
 
 [dependencies]
+anyhow = "1.0.86"
+image = "0.25.1"
 obs-sys = { path = "./obs-sys" }
+winsafe = { git="https://github.com/Strackeror/winsafe", branch = "lastinputinfo", features = ["user", "kernel", "shell"] }
 [lib]
 crate-type = ["cdylib"]
