@@ -1,0 +1,12 @@
+[package]
+name = "obs-clip-rs"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = ["obs-sys", "."]
+
+[dependencies]
+obs-sys = { path = "./obs-sys" }
+[lib]
+crate-type = ["cdylib"]
