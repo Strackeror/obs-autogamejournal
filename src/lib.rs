@@ -150,14 +150,19 @@ fn screenshot_saved(config: &Config) -> Result<()> {
         None => return Ok(()),
         Some(w) => w,
     };
-    let filename = get_last_screenshot_path()?;
-    let img = Reader::open(&filename)?.decode()?;
+    let ss_path = get_last_screenshot_path()?;
+    let img = Reader::open(&ss_path)?.decode()?;
     let img = img.as_rgb8().context("conversion to rgb8")?;
-    let new_filename = get_target_folder(&window, config)?
-        .join(filename.file_name().context("get file name")?)
+    let ss_filename = &ss_path
+        .file_name()
+        .context("get screenshot name")?
+        .to_string_lossy()[11..];
+
+    let new_file = get_target_folder(&window, config)?
+        .join(ss_filename)
         .with_extension("jpg");
-    img.save_with_format(new_filename, image::ImageFormat::Jpeg)?;
-    std::fs::remove_file(filename)?;
+    img.save_with_format(new_file, image::ImageFormat::Jpeg)?;
+    std::fs::remove_file(ss_path)?;
     Ok(())
 }
 
@@ -180,7 +185,7 @@ fn event_callback(event_type: i32) {
 #[no_mangle]
 pub extern "C" fn obs_module_load() -> bool {
     MODULE.lock().unwrap().config = Some(Config {
-        target_path: get_current_record_output_path().unwrap()
+        target_path: get_current_record_output_path().unwrap(),
     });
     add_event_callback(&event_callback);
     sleep_lock::disable_inhibit_sleep().unwrap();
